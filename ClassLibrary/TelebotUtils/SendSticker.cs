@@ -16,9 +16,15 @@ namespace ClassLibrary.TelebotUtils
         {
             try
             {
+                //Message message1 = await Telebot.botClient.SendAnimationAsync(
+                //    chatId: chatId,
+                //    animation: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stikers/Hi.webp"),
+                //    cancellationToken: ReplyUtils.cancellationToken);
+
+                FileStream fs = System.IO.File.Open("Hi.tgs", FileMode.Open);
                 Message message1 = await Telebot.botClient.SendStickerAsync(
                     chatId: chatId,
-                    sticker: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stikers/Hi.webp"),
+                    sticker: InputFile.FromStream(fs),
                     cancellationToken: ReplyUtils.cancellationToken);
             }
             catch (Exception ex)

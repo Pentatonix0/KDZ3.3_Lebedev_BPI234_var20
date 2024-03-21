@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Stikers\" />
+    <Folder Include="Stickers\" />
   </ItemGroup>
 
 </Project>
