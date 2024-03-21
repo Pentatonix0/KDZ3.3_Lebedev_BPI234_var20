@@ -11,9 +11,10 @@ namespace ClassLibrary
 {
     public class Telebot
     {
+        public static TelegramBotClient botClient = new TelegramBotClient("7189734909:AAHa_j9Qf4HAaCGXGicPORFtRzeh3cDieuU");
         public static void Start()
         {
-            var botClient = new TelegramBotClient("7189734909:AAHa_j9Qf4HAaCGXGicPORFtRzeh3cDieuU");
+            //var botClient = new TelegramBotClient("7189734909:AAHa_j9Qf4HAaCGXGicPORFtRzeh3cDieuU");
 
             using CancellationTokenSource cts = new();
 

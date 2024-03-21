@@ -13,9 +13,9 @@ namespace ClassLibrary.TelebotUtils
 {
     public class ReplyUtils
     {
-        static ITelegramBotClient botClient;
+        public static ITelegramBotClient botClient;
         static Update update;
-        static CancellationToken cancellationToken;
+        public static CancellationToken cancellationToken;
         public static async Task ReplyToMessageHandler(ITelegramBotClient BotClient, Update Update, CancellationToken CancellationToken)
         {
             var message = Update.Message;
@@ -32,6 +32,8 @@ namespace ClassLibrary.TelebotUtils
                 switch (text.ToLower())
                 {
                     case "/start":
+                        SendStiker.SendHello(chatId);
+                        SendStart(chatId); break;
                     case "главное меню":
                         SendStart(chatId); break;
                     case "/help":
