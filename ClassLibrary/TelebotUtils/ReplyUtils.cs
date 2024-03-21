@@ -32,7 +32,7 @@ namespace ClassLibrary.TelebotUtils
                 switch (text.ToLower())
                 {
                     case "/start":
-                        SendStiker.SendHello(chatId);
+                        SendSticker.SendHello(chatId);
                         SendStart(chatId); break;
                     case "главное меню":
                         SendStart(chatId); break;

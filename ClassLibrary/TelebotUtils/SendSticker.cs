@@ -10,7 +10,7 @@ using Telegram.Bot.Types;
 
 namespace ClassLibrary.TelebotUtils
 {
-    public class SendStiker
+    public class SendSticker
     { 
         public static async Task SendHello(long chatId)
         {
@@ -18,7 +18,7 @@ namespace ClassLibrary.TelebotUtils
             {
                 Message message1 = await Telebot.botClient.SendStickerAsync(
                     chatId: chatId,
-                    sticker: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stikers/Help.webp"),
+                    sticker: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stikers/Hi.webp"),
                     cancellationToken: ReplyUtils.cancellationToken);
             }
             catch (Exception ex)
