@@ -9,7 +9,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace ClassLibrary.TelebotUtils
 {
-    public class Keyboards
+    public class Keyboards //A class for representing keyboards.
     {
 
         public static ReplyKeyboardRemove RemoveKeyboard = new ReplyKeyboardRemove();
@@ -24,6 +24,14 @@ namespace ClassLibrary.TelebotUtils
         public static ReplyKeyboardMarkup CsvSampleKeyboard = new(new[]
                 {
                     new KeyboardButton[] { "CoverageArea", "ParkName", "AdmArea и CoverageArea", "Главное меню" },
+                })
+        {
+            ResizeKeyboard = true
+        };
+
+        public static ReplyKeyboardMarkup CsvSortKeyboard = new(new[]
+                {
+                    new KeyboardButton[] { "Name", "CoverageArea" ,"Главное меню" },
                 })
         {
             ResizeKeyboard = true
@@ -45,7 +53,7 @@ namespace ClassLibrary.TelebotUtils
         {
             ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
                 {
-                    new KeyboardButton[] { "Добавить CSV файл", "Добавить Json файл"  },
+                    new KeyboardButton[] { "Добавить CSV файл", "Добавить Json файл", "Продолжить с загруженным"},
                 })
             {
                 ResizeKeyboard = true

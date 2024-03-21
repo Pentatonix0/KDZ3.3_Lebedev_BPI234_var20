@@ -12,10 +12,8 @@ namespace ClassLibrary
     public class Telebot
     {
         public static TelegramBotClient botClient = new TelegramBotClient("7189734909:AAHa_j9Qf4HAaCGXGicPORFtRzeh3cDieuU");
-        public static void Start()
+        public static void Start() //Launching the bot.
         {
-            //var botClient = new TelegramBotClient("7189734909:AAHa_j9Qf4HAaCGXGicPORFtRzeh3cDieuU");
-
             using CancellationTokenSource cts = new();
 
             ReceiverOptions receiverOptions = new()
@@ -30,18 +28,22 @@ namespace ClassLibrary
                 cancellationToken: cts.Token
             );
 
-            var me = botClient.GetMeAsync(); //------------await
+            var me = botClient.GetMeAsync(); 
 
             Console.WriteLine($"Start listening for @{me}");
             Console.ReadLine();
 
-            // Send cancellation request to stop bot
+            // Send cancellation request to stop bot.
             cts.Cancel();
 
 
 
             async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
             {
+                if (update.Message is not { } message)
+                    return;
+                // Only process text messages.
+               
                 ReplyUtils.ReplyToMessageHandler(botClient, update, cancellationToken);
             }
 
@@ -54,7 +56,6 @@ namespace ClassLibrary
                     _ => exception.ToString()
                 };
 
-                Console.WriteLine(ErrorMessage);
                 return Task.CompletedTask;
             }
         }

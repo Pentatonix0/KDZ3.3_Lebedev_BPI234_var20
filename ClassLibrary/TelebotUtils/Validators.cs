@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary.TelebotUtils
 {
-    internal class Validators
+    internal class Validators //The validator class for the input data.
     {
         public static bool CSVValidator(string filename)
         {

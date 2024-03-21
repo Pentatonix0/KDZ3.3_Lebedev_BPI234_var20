@@ -11,11 +11,11 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassLibrary.TelebotUtils
 {
-    public class ReplyUtils
+    public class ReplyUtils //A class for user interaction.
     {
         public static ITelegramBotClient botClient;
-        static Update update;
         public static CancellationToken cancellationToken;
+        static Update update;
         public static async Task ReplyToMessageHandler(ITelegramBotClient BotClient, Update Update, CancellationToken CancellationToken)
         {
             var message = Update.Message;
@@ -25,19 +25,18 @@ namespace ClassLibrary.TelebotUtils
             botClient = BotClient;
             update = Update;
             cancellationToken = CancellationToken;
-            Console.WriteLine(Enterable.EnterField());
             if (text != null && Enterable.HighPriority.Contains(text.ToLower()))
             {
                 Enterable.ToDefault();
                 switch (text.ToLower())
                 {
                     case "/start":
-                        SendSticker.SendHello(chatId);
+                        await SendSticker.SendHello(chatId);
                         SendStart(chatId); break;
                     case "главное меню":
-                        SendStart(chatId); break;
+                        MainMenu(chatId); break;
                     case "/help":
-                        SendHelh(chatId); break;
+                        SendHelp(chatId); break;
                 }
             }
             else if (Enterable.EnterField())
@@ -73,14 +72,37 @@ namespace ClassLibrary.TelebotUtils
                     case "добавить json файл":
                         Enterable.json = true;
                         InputJsonMessage(chatId); break;
+                    case "продолжить с загруженным":
+                        IsFileDonloaded(chatId); break;
                     case "выборка":
                         CsvSampleHandler(chatId); break;
+                    case "сортировка":
+                        CsvSortHandler(chatId); break;
                     case "coveragearea":
-                        InputCoverageArea(chatId); break;
+                        bool result;
+                        if (Enterable.sample_csv)
+                        {
+                            InputCoverageArea(chatId);
+                        }
+                        else
+                        {
+                            Enterable.sort_csv = false;
+                            FileProcessing.SortByName();
+                            result = FileProcessing.SortByCoverageArea();
+                            ReplyToProcess(chatId, result, false);
+                            break;
+                        }
+                        break;
                     case "parkname":
                         InputParkName(chatId); break;
                     case "admarea и coveragearea":
                         InputAdmArea(chatId); break;
+                    case "name":
+                        Enterable.sort_csv = false;
+                        FileProcessing.SortByName();
+                        result = FileProcessing.SortByName();
+                        ReplyToProcess(chatId, result, false);
+                        break;
                     default:
                         InvalidMessage(chatId); break;
                 }
@@ -106,25 +128,57 @@ namespace ClassLibrary.TelebotUtils
         {
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: "Вас приветствует бот для обработки CSV (и Json) файлов!",
+                    text: Texts.HelloText,
                     replyMarkup: Keyboards.FileTypeKeyboard(),
                     cancellationToken: cancellationToken);
         }
 
-        public static async Task SendHelh(long chatId)
+        public static async Task MainMenu(long chatId)
         {
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: "Помощь!",
-                    replyMarkup: Keyboards.MainMenuKeyboard(),
+                    text: Texts.MainMenu,
+                    replyMarkup: Keyboards.FileTypeKeyboard(),
                     cancellationToken: cancellationToken);
         }
 
+        public static async Task SendHelp(long chatId)
+        {
+            SendSticker.SendHelp(chatId);
+            Message sentMessage = await botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "Помощь уже в пути...!",
+                    replyMarkup: Keyboards.MainMenuKeyboard(),
+                    cancellationToken: cancellationToken);
+        }
+        public static async Task IsFileDonloaded(long chatId)
+        {
+            if (Enterable.isdonloaded)
+            {
+                Enterable.sample_csv = true;
+                Enterable.sort_csv = true;
+                Message sentMessage = await botClient.SendTextMessageAsync(
+                     chatId: chatId,
+                     text: "Продолжим обрабатывать загруженный файл!",
+                     replyMarkup: Keyboards.CsvProcessingKeyboard,
+                     cancellationToken: cancellationToken);
+            }
+            else
+            {
+                Message sentMessage = await botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "Я не смогла найти файл(((\n\n" +
+                    "Вероятно, вы его ещё не загружали",
+                    replyMarkup: Keyboards.FileTypeKeyboard(),
+                    cancellationToken: cancellationToken);
+            }
+        }
         public static async Task InvalidMessage(long chatId)
         {
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: "Сообщение не распознано, повторите ввод",
+                    text: "Я не смогла вас понять(((\n\n" +
+                    "Попробуйте ещё раз",
                     replyMarkup: Keyboards.MainMenuKeyboard(),
                     cancellationToken: cancellationToken);
         }
@@ -133,10 +187,10 @@ namespace ClassLibrary.TelebotUtils
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
                     text: "В данном месте чата отправка файлов запрещена!\n" +
-                    "Вы перенаправлены в главное меню",
+                    "Я верну вас в главное меню",
                     replyMarkup: Keyboards.RemoveKeyboard,
                     cancellationToken: cancellationToken);
-            SendStart(chatId);
+            MainMenu(chatId);
 
         }
 
@@ -144,8 +198,7 @@ namespace ClassLibrary.TelebotUtils
         {
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: "Отправьте в чат CSV файл.\n" +
-                    "Текст в сообщении с файлом будет проигнорирован.",
+                    text: "Отправьте в чат CSV файл",
                     replyMarkup: Keyboards.MainMenuKeyboard(),
                     cancellationToken: cancellationToken);
         }
@@ -154,8 +207,7 @@ namespace ClassLibrary.TelebotUtils
         {
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: "Отправьте в чат Json файл.\n" +
-                    "Текст в сообщении с файлом будет проигнорирован.",
+                    text: "Отправьте в чат Json файл",
                     replyMarkup: Keyboards.MainMenuKeyboard(),
                     cancellationToken: cancellationToken);
         }
@@ -172,9 +224,7 @@ namespace ClassLibrary.TelebotUtils
                 using (Stream fileStream = new MemoryStream())
                 {
                     var file = await botClient.GetInfoAndDownloadFileAsync(fileId, fileStream, cancellationToken);
-                    //FileProcessing.File = fileStream;
-                    Console.WriteLine(10);
-                    FileProcessing.list = CSVNew.Read(fileStream);
+                    FileProcessing.list = CsvProcessing.Read(fileStream);
                     
                 }
             }
@@ -213,19 +263,19 @@ namespace ClassLibrary.TelebotUtils
 
         public static async Task IsCorrectInputFile(long chatId, bool iscorrect)
         {
-            string text = iscorrect ? "Файл успешно прочитан" : "Отправленный файл не соответствует требованиям!\n" +
-                    "Вы переправлены в главное меню";
+            string text = iscorrect ? "Я успешно прочитала файл!" : "Ваш файл не соответствует требованиям!\n" +
+                    "Я верну вас в главное меню";
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
                     text: text,
                     cancellationToken: cancellationToken);
             if (!iscorrect)
             {
-                SendStart(chatId);
+                MainMenu(chatId);
             }
             else
             {
-                //FileProcessing.JsonToCsv();+++++++++++++++++++++
+                Enterable.isdonloaded = true;
                 CsvProcessingHandler(chatId);
             }
         }
@@ -234,7 +284,7 @@ namespace ClassLibrary.TelebotUtils
         {
             Message sentMessage = await botClient.SendTextMessageAsync(
                    chatId: chatId,
-                   text: "Вы можете отфильтровать файл или произвести выборку",
+                   text: "Можем отфильтровать или отсортировать данные",
                    replyMarkup: Keyboards.CsvProcessingKeyboard,
                    cancellationToken: cancellationToken);
             Enterable.sample_csv = true;
@@ -243,8 +293,9 @@ namespace ClassLibrary.TelebotUtils
 
         public static async Task CsvSampleHandler(long chatId)
         {
-            if (Enterable.sample_csv && Enterable.sort_csv)
+            if (Enterable.sample_csv)
             {
+                Enterable.sort_csv = false;
                 string text = "Вы можете произвести выборку по полям:\n" +
                     "• CoverageArea\n" +
                     "• ParkName\n" +
@@ -259,14 +310,32 @@ namespace ClassLibrary.TelebotUtils
             {
                 Message sentMessage = await botClient.SendTextMessageAsync(
                        chatId: chatId,
-                       text: "В данном месте диалога операция недоступна!",
+                       text: "Сейчас это сделать нельзя!",
                        cancellationToken: cancellationToken);
             }
-
         }
+
         public static async Task CsvSortHandler(long chatId)
         {
-
+            if (Enterable.sort_csv)
+            {
+                Enterable.sample_csv = false;
+                string text = "Вы можете произвести сортировку по полям:\n" +
+                    "• Name\n" +
+                    "• CoverageArea\n";
+                Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: text,
+                        replyMarkup: Keyboards.CsvSortKeyboard,
+                        cancellationToken: cancellationToken);
+            }
+            else
+            {
+                Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: "Сейчас это сделать нельзя!",
+                        cancellationToken: cancellationToken);
+            }
         }
 
         public static async Task InputCoverageArea(long chatId)
@@ -305,28 +374,43 @@ namespace ClassLibrary.TelebotUtils
             {
                 Message sentMessage = await botClient.SendTextMessageAsync(
                        chatId: chatId,
-                       text: $"Не удалось произвести {process_type}! Проверьте входные данные",
+                       text: $"Я не смогла произвести {process_type}! Проверьте входные данные",
                        replyMarkup: Keyboards.MainMenuKeyboard(),
                        cancellationToken: cancellationToken);
-                Enterable.csv_coverage_area = true;
+                
             }
             else
             {
                 process_type = issample ? "выборки" : "сортировки";
-                Stream stream = CSVNew.Write(FileProcessing.processed_list);
+                string name = issample ? "Sampled" : "Sorted";
+                Stream stream = CsvProcessing.Write(FileProcessing.processed_list);
 
                 Message sentMessage = await botClient.SendDocumentAsync(
                     chatId: chatId,
-                    document: InputFile.FromStream(stream, "SampledFile.csv"),
+                    document: InputFile.FromStream(stream, $"{name}File.csv"),
                     caption: $"Результат {process_type} в формате csv");
 
                 stream = JsonProcessing.Write(FileProcessing.processed_list);
 
                 Message sentMessage2 = await botClient.SendDocumentAsync(
                     chatId: chatId,
-                    document: InputFile.FromStream(stream, "SampledFile.json"),
+                    document: InputFile.FromStream(stream, $"{name}File.json"),
                     caption: $"Результат {process_type} в формате json");
+
+                await SendSticker.SendGive(chatId);
             }
+
+            await WhatsNext(chatId);
+        }
+
+        public static async Task WhatsNext(long chatId)
+        {
+            Message sentMessage = await botClient.SendTextMessageAsync(
+                       chatId: chatId,
+                       text: "Что будем делать дальше?",
+                       replyMarkup: Keyboards.FileTypeKeyboard(),
+                       cancellationToken: cancellationToken);
+            
         }
 
     }

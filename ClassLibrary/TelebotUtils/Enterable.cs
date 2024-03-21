@@ -8,14 +8,15 @@ namespace ClassLibrary.TelebotUtils
 {
     public class Enterable
     {
-        public static bool csv = false;
-        public static bool json = false;
-        public static bool sample_csv = false;
-        public static bool sort_csv = false;
-        public static bool csv_coverage_area= false;
-        public static bool csv_park_name = false;
-        public static bool csv_adm_area = false;
-        public static string[] HighPriority = new string[] { "/start", "/help", "главное меню" };
+        public static bool csv = false; //Flags for data entry, selections, and sorting.
+        public static bool json = false; //Flags for data entry, selections, and sorting.
+        public static bool sample_csv = false; //Flags for data entry, selections, and sorting.
+        public static bool sort_csv = false; //Flags for data entry, selections, and sorting.
+        public static bool csv_coverage_area= false; //Flags for data entry, selections, and sorting.
+        public static bool csv_park_name = false; //Flags for data entry, selections, and sorting.
+        public static bool csv_adm_area = false; //Flags for data entry, selections, and sorting.
+        public static bool isdonloaded = false; //Flags for data entry, selections, and sorting.
+        public static string[] HighPriority = new string[] { "/start", "/help", "главное меню" }; //Priority of calls.
 
         public static bool EnterField()
         {

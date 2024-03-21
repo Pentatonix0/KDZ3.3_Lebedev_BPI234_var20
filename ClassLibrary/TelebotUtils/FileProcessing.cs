@@ -11,15 +11,9 @@ namespace ClassLibrary.TelebotUtils
 {
     public class FileProcessing
     {
-        public static string path_csv = $"{System.IO.Directory.GetCurrentDirectory()}\\file.csv";
-        public static string new_path_sample_csv = $"{System.IO.Directory.GetCurrentDirectory()}\\file_sample.csv";
-        public static string path_json = $"{System.IO.Directory.GetCurrentDirectory()}\\file.json";
-        public static string new_path_sample_json = $"{System.IO.Directory.GetCurrentDirectory()}\\file_sample.json";
-
-
-        public static List<WifiPark> list;
-        public static List<WifiPark> processed_list;
-        public static bool CsvSampleByCoverageArea(string area_value)
+        public static List<WifiPark> list; //Input data.
+        public static List<WifiPark> processed_list; //Output data.
+        public static bool CsvSampleByCoverageArea(string area_value) //Selection.
         {
             try
             {
@@ -33,7 +27,7 @@ namespace ClassLibrary.TelebotUtils
 
         }
 
-        public static bool CsvSampleByParkName(string area_value)
+        public static bool CsvSampleByParkName(string area_value) //Selection.
         {
             try
             {
@@ -49,7 +43,7 @@ namespace ClassLibrary.TelebotUtils
 
         }
 
-        public static bool CsvSampleByAdmArea(string area_value)
+        public static bool CsvSampleByAdmArea(string area_value) //Selection.
         {
             try
             {
@@ -66,12 +60,34 @@ namespace ClassLibrary.TelebotUtils
 
         }
 
-        //public static void JsonToCsv()
-        //{
-        //    string json = JsonProcessing.ReadJson(path_json);
-        //    WifiPark[] wp = JsonProcessing.JsonToWifiPark(json);
-        //    CSVNew.Write(wp, path_csv);
-        //}
+        public static bool SortByName() //Sorting.
+        {
+            try
+            {
+                processed_list = list.OrderBy(x => x.Name).ToList();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        public static bool SortByCoverageArea() //Sorting.
+        {
+            try
+            {
+                processed_list = list.OrderBy(x => x.CoverageArea).ToList();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
 
 
     }

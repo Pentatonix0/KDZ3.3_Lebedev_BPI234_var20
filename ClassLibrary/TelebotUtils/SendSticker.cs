@@ -10,27 +10,39 @@ using Telegram.Bot.Types;
 
 namespace ClassLibrary.TelebotUtils
 {
-    public class SendSticker
+    public class SendSticker //Class for sending stickers.
     { 
         public static async Task SendHello(long chatId)
         {
-            try
-            {
-                //Message message1 = await Telebot.botClient.SendAnimationAsync(
-                //    chatId: chatId,
-                //    animation: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stikers/Hi.webp"),
-                //    cancellationToken: ReplyUtils.cancellationToken);
+           
+            Message message1 = await Telebot.botClient.SendStickerAsync(
+                chatId: chatId,
+                sticker: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stickers/Hi.webp"),
+                cancellationToken: ReplyUtils.cancellationToken);
+                
+            
+        }
 
-                FileStream fs = System.IO.File.Open("Hi.tgs", FileMode.Open);
-                Message message1 = await Telebot.botClient.SendStickerAsync(
-                    chatId: chatId,
-                    sticker: InputFile.FromStream(fs),
-                    cancellationToken: ReplyUtils.cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+        public static async Task SendHelp(long chatId)
+        {
+
+            Message message1 = await Telebot.botClient.SendStickerAsync(
+                chatId: chatId,
+                sticker: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stickers/Help.webp"),
+                cancellationToken: ReplyUtils.cancellationToken);
+
+
+        }
+
+        public static async Task SendGive(long chatId)
+        {
+
+            Message message1 = await Telebot.botClient.SendStickerAsync(
+                chatId: chatId,
+                sticker: InputFile.FromUri("https://raw.githubusercontent.com/Pentatonix0/KDZ3.3_Lebedev_BPI234_var20/master/ClassLibrary/Stickers/Give.webp"),
+                cancellationToken: ReplyUtils.cancellationToken);
+
+
         }
     }
 }

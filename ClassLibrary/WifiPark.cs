@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary
 {
-    public  class WifiPark
+    public  class WifiPark //A class for representing data in Json and Csv files.
     {
         public int ID { get; set; }
         public long global_id { get; set; }

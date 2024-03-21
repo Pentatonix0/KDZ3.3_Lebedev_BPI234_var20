@@ -11,32 +11,6 @@ namespace ClassLibrary
 {
     public class JsonProcessing
     {
-        public static string WifiParkToJson(WifiPark[] wifiparks) // Method to convert SpespecifiedProduct to json.
-        {
-            var options = new JsonSerializerOptions {
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-                WriteIndented = true };
-            string json = JsonSerializer.Serialize(wifiparks, options);
-            return json;
-        }
-        public static WifiPark[] JsonToWifiPark(string json) // Method to convert SpespecifiedProduct to json.
-        {
-            WifiPark[] wifipark = JsonSerializer.Deserialize<WifiPark[]>(json);
-            return wifipark;
-        }
-
-        public static string ReadJson(string path) // Method for reading data.
-        {
-            using StreamReader file = new StreamReader(path);
-            string json = file.ReadToEnd();
-            return json;
-        }
-
-        public static void WriteJson(string path, string json) // A method for filtering data.
-        {
-            File.WriteAllText(path, json);
-        }
-
         public static List<WifiPark> Read(Stream stream)
         {
             stream.Position = 0;
@@ -50,17 +24,16 @@ namespace ClassLibrary
         }
 
 
-        public static Stream Write(List<WifiPark> items)
+        public static Stream Write(List<WifiPark> list)
         {
             var options = new JsonSerializerOptions
             {
-                // Отступы для удобного чтения файла.
                 WriteIndented = true,
             };
 
             options.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
 
-            var jsonString = JsonSerializer.Serialize(items, options);
+            var jsonString = JsonSerializer.Serialize(list, options);
             var byteArray = Encoding.UTF8.GetBytes(jsonString);
             var stream = new MemoryStream(byteArray);
 

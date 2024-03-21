@@ -1,188 +1,120 @@
-﻿using System.Text;
+﻿using System.Formats.Asn1;
+using System.Globalization;
+using System.Text;
+using CsvHelper;
 
 namespace ClassLibrary
 {
     public class CsvProcessing
     {
-        public static string fPath;
-
-        public static string[] Read() // Method for reading the file.
+        public static string Head_EN = "\"ID\";\"global_id\";\"Name\";\"AdmArea\";\"District\";\"ParkName\";\"WiFiName\";\"CoverageArea\";\"FunctionFlag\";\"AccessFlag\";\"Password\";\"Longitude_WGS84\";\"Latitude_WGS84\";\"geodata_center\";\"geoarea\";";
+        public static string Head_RU = "\"Код\";\"global_id\";\"Наименование\";\"Административный округ по адресу\";\"Район\";\"Наименование парка\";\"Имя Wi-Fi сети\";\"Зона покрытия (метры)\";\"Признак функционирования\";\"Условия доступа\";\"Пароль\";\"Долгота в WGS-84\";\"Широта в WGS-84\";\"geodata_center\";\"geoarea\";";
+        public static string[] Head = { };
+        public static List<WifiPark> Read(Stream stream)     // Method for reading the file.
         {
+            
+            stream.Position = 0;
+            var list = new List<WifiPark>();
             try
             {
-                string[] rowdata = null;
-                rowdata = File.ReadAllLines(fPath);
-                return rowdata;
-            }
-            catch
-            {
-                throw new ArgumentNullException(fPath, "Wrong Path");
-            }
-
-        }
-
-        public static string[][] ArrayBuilder(string[] array) // Method for creating a jagged array.
-        {
-            string[][] data = new string[array.Length][];
-            for (int i = 0; i < array.Length; i++)
-            {
-                data[i] = array[i].Split(';');
-                for (int j = 0; j < data[i].Length; j++)
+                    using (var reader = new StreamReader(stream))
                 {
-                    data[i][j] = data[i][j].Replace("\"", "");
-                }
-
-            }
-
-            return data;
-        }
-
-        public static Dictionary<string, int> MakeHeadDict(string[][] data) // Method for creating a dictionary from the header.
-        {
-            Dictionary<string, int> dict = new Dictionary<string, int>();
-            string[] head = data[0];
-            for (int i = 0; i < head.Length; i++)
-            {
-                dict.Add(head[i].Replace("\"", ""), i);
-            }
-
-            return dict;
-        }
-
-        public static string[] SampleByArea(string[] data_user, string area, string area_name) // Sampling by value CoverageArea or ParkName.
-        {
-            string[][] data = CsvProcessing.ArrayBuilder(data_user);
-            Dictionary<string, int> dict = MakeHeadDict(data);
-            string[] new_data = new string[2];
-            new_data[0] = String.Join(';', data[0]);
-            new_data[1] = String.Join(';', data[1]);
-            foreach (string[] row in data)
-            {
-
-                if (row[dict[area_name]] == area.Replace('<', '«').Replace('>', '»'))
-                {
-                    Array.Resize(ref new_data, new_data.Length + 1);
-                    new_data[new_data.Length - 1] = String.Join(";", row);
-                }
-            }
-
-            return new_data;
-
-
-        }
-
-        public static string[] SampleByAreas(string[] data_user, string admarea, int coverage_area) // Sampling by value AdmArea and ParkName.
-        {
-            string[][] data = CsvProcessing.ArrayBuilder(data_user);
-            Dictionary<string, int> dict = MakeHeadDict(data);
-            string[] new_data = new string[2];
-            new_data[0] = String.Join(';', data[0]);
-            new_data[1] = String.Join(';', data[1]);
-            foreach (string[] row in data)
-            {
-
-                if (row[dict["AdmArea"]] == admarea && row[dict["CoverageArea"]] == coverage_area.ToString())
-                {
-                    Array.Resize(ref new_data, new_data.Length + 1);
-                    new_data[new_data.Length - 1] = String.Join(";", row);
-                }
-            }
-            return new_data;
-        }
-        public static void OutputData(string[] data) // Method for displaying an array on the screen.
-        {
-            for (int i = 2; i < data.Length; i++)
-            {
-                Console.WriteLine(data[i].Replace(";;", ";").Replace(";;",";"));
-                Console.WriteLine();
-
-            }
-            Console.WriteLine();
-        }
-
-        public static bool Write(string[] data, string fPath) // Method for writing an array of strings.
-        {
-            try
-            {
-                var csv = new StringBuilder();
-                foreach (string row in data)
-                {
-                    csv.AppendLine(row.Replace(',', '.'));
-
-                }
-                File.WriteAllText(fPath, csv.ToString());
-                Console.WriteLine();
-                Console.WriteLine("Запись прошла успешно");
-                return true;
-            }
-            catch
-            {
-                Console.WriteLine();
-                Console.WriteLine($"Failed to write {fPath}\nPlease check your Input Data");
-                Console.WriteLine();
-                return false;
-
-            }
-        }
-
-        public static string[] SortByName(string[] data) // Method for sorting by Name.
-        {
-            string[][] array = CsvProcessing.ArrayBuilder(data);
-            Dictionary<string, int> dict = MakeHeadDict(array);
-            int indx = dict["Name"];
-            for (int i = 2; i < array.Length; i++)
-            {
-                for (int j = 2; j < array.Length - 1; j++)
-                {
-                    if (String.Compare(array[j][indx], array[j + 1][indx]) > 0)
+                    var config = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
                     {
-                        string[] temp = array[j];
-                        array[j] = array[j + 1];
-                        array[j + 1] = temp;
+                        Delimiter = ";"
+                    };
+                    using (var csv = new CsvReader(reader, config))
+
+                    {
+                        csv.Read();
+                        csv.ReadHeader();
+                        csv.Read();
+
+                        string[] heads =
+                        {
+                        csv.GetField("ID") ?? "",
+                        csv.GetField("global_id") ?? "",
+                        csv.GetField("Name") ?? "",
+                        csv.GetField("AdmArea") ?? "",
+                        csv.GetField("District") ?? "",
+                        csv.GetField("ParkName") ?? "",
+                        csv.GetField("WiFiName") ?? "",
+                        csv.GetField("CoverageArea") ?? "",
+                        csv.GetField("FunctionFlag") ?? "",
+                        csv.GetField("AccessFlag") ?? "",
+                        csv.GetField("Password")?? "",
+                        csv.GetField("Longitude_WGS84")?? "",
+                        csv.GetField("Latitude_WGS84")?? "",
+                        csv.GetField("geodata_center") ?? "",
+                        csv.GetField("geoarea") ?? ""
+                    };
+
+                        Head = heads;
+
+                        while (csv.Read())
+                        {
+                            var record = new WifiPark(
+                                csv.GetField<int>("ID"),
+                                csv.GetField<long>("global_id"),
+                                csv.GetField("Name") ?? "",
+                                csv.GetField("AdmArea") ?? "",
+                                csv.GetField("District") ?? "",
+                                csv.GetField("ParkName") ?? "",
+                                csv.GetField("WiFiName") ?? "",
+                                csv.GetField<int>("CoverageArea"),
+                                csv.GetField("FunctionFlag") ?? "",
+                                csv.GetField("AccessFlag") ?? "",
+                                csv.GetField("Password") ?? "",
+                                csv.GetField<double>("Longitude_WGS84"),
+                                csv.GetField<double>("Latitude_WGS84"),
+                                csv.GetField("geodata_center") ?? "",
+                                csv.GetField("geoarea") ?? "");
+
+                            list.Add(record);
+                        }
                     }
                 }
+                return list;
             }
-            string[] new_data = new string[2];
-            new_data[0] = String.Join(';', array[0]);
-            new_data[1] = String.Join(';', array[1]);
-            for (int i = 2; i < array.GetLength(0); i++)
+            catch(Exception e) 
             {
+    
                 
-                Array.Resize(ref new_data, new_data.Length + 1);
-                new_data[i] = String.Join(";", array[i]);
             }
-            return new_data;
-        }
-        public static string[] SortByCoverageArea(string[] data) // Method for sorting by CoverageArea.
-        {
-            string[][] array = CsvProcessing.ArrayBuilder(data);
-            Dictionary<string, int> dict = MakeHeadDict(array);
-            int indx = dict["CoverageArea"];
-            for (int i = 2; i < array.Length; i++)
-            {
-                for (int j = 2; j < array.Length - 1; j++)
-                {
-                    int a = int.Parse(array[j][indx]);
-                    int b = int.Parse(array[j + 1][indx]);
-                   
-                    if (a > b)
-                    {
-                        string[] temp = array[j];
-                        array[j] = array[j + 1];
-                        array[j + 1] = temp;
-                    }
-                }
-            }
-            string[] new_data = new string[2];
-            new_data[0] = String.Join(';', array[0]);
-            new_data[1] = String.Join(';', array[1]);
-            for (int i = 2; i < array.GetLength(0); i++)
-            {
-                Array.Resize(ref new_data, new_data.Length + 1);
-                new_data[i] = String.Join(";", array[i]);
-            }
-            return new_data;
+            return list;
         }
 
+        public static Stream Write(List<WifiPark> centers) // Method for writing an array of strings.
+        {
+
+            Stream memstream = new MemoryStream();
+            StreamWriter streamWriter = new StreamWriter(memstream);
+
+            var config = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = ";"
+            };
+
+            CsvWriter csvWriter = new CsvWriter(streamWriter, config);
+
+            csvWriter.WriteHeader<WifiPark>();
+            csvWriter.NextRecord();
+            csvWriter.WriteField(Head);
+            csvWriter.NextRecord();
+
+            foreach (var center in centers)
+            {
+                csvWriter.WriteRecord(center);
+                csvWriter.NextRecord();
+            }
+
+            streamWriter.Flush();
+            memstream.Position = 0;
+
+            return memstream;
+        }
     }
 }
+
+
+    
