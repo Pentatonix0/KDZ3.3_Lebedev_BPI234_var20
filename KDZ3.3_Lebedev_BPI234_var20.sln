@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KDZ3.3_Lebedev_BPI234_var20", "KDZ3.3_Lebedev_BPI234_var20\KDZ3.3_Lebedev_BPI234_var20.csproj", "{38FAF9C8-DA21-47A4-91EA-BF45409328F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{F72959BF-7D3C-4E33-AAD5-7D7365FFA935}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{38FAF9C8-DA21-47A4-91EA-BF45409328F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38FAF9C8-DA21-47A4-91EA-BF45409328F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38FAF9C8-DA21-47A4-91EA-BF45409328F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38FAF9C8-DA21-47A4-91EA-BF45409328F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F72959BF-7D3C-4E33-AAD5-7D7365FFA935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F72959BF-7D3C-4E33-AAD5-7D7365FFA935}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F72959BF-7D3C-4E33-AAD5-7D7365FFA935}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F72959BF-7D3C-4E33-AAD5-7D7365FFA935}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E537346B-AB4A-4796-824E-6A6BDBB3815F}
+	EndGlobalSection
+EndGlobal
